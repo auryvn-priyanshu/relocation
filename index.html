@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIVYA-DATA | AI Relocation Astrology Engine</title>
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --blush-pink: #FCE7F3;
+            --soft-lilac: #EDE9FE;
+            --sky-blue: #E0F2FE;
+            --cream-bg: #FCFBFA;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --accent-pink: #F472B6;
+            --accent-purple: #A78BFA;
+            --glass: rgba(255, 255, 255, 0.7);
+            --gradient-love: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 100%);
+            --gradient-cta: linear-gradient(135deg, #F472B6 0%, #A78BFA 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- BACKGROUND BLOBS --- */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 10% 20%, var(--blush-pink) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, var(--sky-blue) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, var(--soft-lilac) 0%, transparent 60%);
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 50px); }
+        }
+
+        /* --- UI COMPONENTS --- */
+        header {
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.2rem;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* --- FORM STYLING --- */
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .input-group { grid-template-columns: 1fr; }
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            background: rgba(255, 255, 255, 0.8);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.1);
+        }
+
+        .btn-main {
+            display: block;
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--gradient-cta);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(244, 114, 182, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(244, 114, 182, 0.4);
+        }
+
+        /* --- MAP STYLING --- */
+        #map {
+            height: 450px;
+            width: 100%;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            z-index: 1;
+            border: 4px solid white;
+        }
+
+        .leaflet-container {
+            background: var(--sky-blue) !important;
+        }
+
+        /* --- RESULTS SECTION --- */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            border-left: 6px solid var(--accent-purple);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .result-card.visible {
+            animation: slideUp 0.6s forwards;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag-career { background: var(--sky-blue); color: #0369a1; }
+        .tag-love { background: var(--blush-pink); color: #be185d; }
+        .tag-peace { background: var(--soft-lilac); color: #6d28d9; }
+
+        .location-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .explanation {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* --- LOADER --- */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--cream-bg);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loader-circle {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--soft-lilac);
+            border-top: 4px solid var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            letter-spacing: 0.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg">
+        <div class="floating-orb" style="width: 400px; height: 400px; background: var(--blush-pink); top: -100px; right: -100px;"></div>
+        <div class="floating-orb" style="width: 300px; height: 300px; background: var(--sky-blue); bottom: -50px; left: -50px;"></div>
+    </div>
+
+    <div class="loader-overlay" id="loader">
+        <div class="loader-circle"></div>
+        <p style="margin-top: 1.5rem; font-family: 'Playfair Display'; font-style: italic;">Consulting the stars for your journey...</p>
+    </div>
+
+    <header>
+        <div class="brand">Divya-Data</div>
+        <h1>Relocation AI</h1>
+        <p style="color: var(--text-light)">Where should your soul settle next?</p>
+    </header>
+
+    <div class="container">
+        <section class="glass-card">
+            <div class="input-group">
+                <div>
+                    <label>Birth Date</label>
+                    <input type="date" id="birthDate" value="2000-01-01">
+                </div>
+                <div>
+                    <label>Birth Time</label>
+                    <input type="time" id="birthTime" value="12:00">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label>Birth City</label>
+                    <input type="text" id="birthCity" placeholder="e.g. New York, London">
+                </div>
+                <div>
+                    <label>Focus Area</label>
+                    <select id="focus">
+                        <option value="all">Global Analysis</option>
+                        <option value="career">Professional Growth</option>
+                        <option value="love">Romantic Harmony</option>
+                        <option value="peace">Spiritual Peace</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-main" onclick="calculateRelocation()">Generate Destiny Map</button>
+        </section>
+
+        <div id="results-area" style="display: none;">
+            <div id="map"></div>
+
+            <h2 style="font-family: 'Playfair Display'; margin-bottom: 1.5rem; text-align: center;">Your Celestial Sanctuary</h2>
+            
+            <div class="results-grid" id="resultsGrid">
+                <!-- Cards injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 DIVYA-DATA ASTRO-INTELLIGENCE. <br>
+        Crafted for the modern soul.
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let markers = [];
+        let planetaryLines = [];
+
+        // Initialization
+        window.onload = () => {
+            initMap();
+        };
+
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([20, 0], 2);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        async function calculateRelocation() {
+            const loader = document.getElementById('loader');
+            const resultsArea = document.getElementById('results-area');
+            const resultsGrid = document.getElementById('resultsGrid');
+            
+            // Show Loader
+            loader.style.display = 'flex';
+            resultsArea.style.display = 'none';
+            resultsGrid.innerHTML = '';
+            
+            // Simulate AI/Astrological Calculation
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const locations = [
+                { name: "Tokyo, Japan", type: "career", lat: 35.6762, lng: 139.6503, desc: "Your Midheaven (MC) line aligns here. A power zone for leadership and public recognition." },
+                { name: "Paris, France", type: "love", lat: 48.8566, lng: 2.3522, desc: "Venus is Ascending. Your natural charm and aesthetic appreciation are magnified in this romantic capital." },
+                { name: "Ubud, Bali", type: "peace", lat: -8.5069, lng: 115.2625, desc: "Neptune IC line provides deep spiritual grounding and emotional healing." },
+                { name: "Lisbon, Portugal", type: "career", lat: 38.7223, lng: -9.1393, desc: "Sun MC line creates opportunities for authentic self-expression in your professional life." },
+                { name: "Vancouver, Canada", type: "peace", lat: 49.2827, lng: -123.1207, desc: "Moon IC line offers a sense of 'home' and emotional security that you've been seeking." },
+                { name: "Sydney, Australia", type: "love", lat: -33.8688, lng: 151.2093, desc: "Jupiter Descendant line brings expansion through partnerships and serendipitous encounters." }
+            ];
+
+            // Clear previous data
+            markers.forEach(m => map.removeLayer(m));
+            planetaryLines.forEach(l => map.removeLayer(l));
+            markers = [];
+            planetaryLines = [];
+
+            // Display Results
+            resultsArea.style.display = 'block';
+            map.invalidateSize();
+
+            locations.forEach((loc, index) => {
+                // Add Marker
+                const color = loc.type === 'career' ? '#E0F2FE' : loc.type === 'love' ? '#FCE7F3' : '#EDE9FE';
+                const marker = L.circleMarker([loc.lat, loc.lng], {
+                    radius: 12,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map).bindPopup(`<b>${loc.name}</b><br>${loc.desc}`);
+                markers.push(marker);
+
+                // Add "Planetary Line" (Curved Path effect)
+                const line = L.polyline([
+                    [loc.lat - 80, loc.lng - 20],
+                    [loc.lat, loc.lng],
+                    [loc.lat + 80, loc.lng + 20]
+                ], {
+                    color: color === '#E0F2FE' ? '#0ea5e9' : color === '#FCE7F3' ? '#f472b6' : '#a78bfa',
+                    weight: 2,
+                    dashArray: '5, 10',
+                    opacity: 0.5
+                }).addTo(map);
+                planetaryLines.push(line);
+
+                // Add Card
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <span class="tag tag-${loc.type}">${loc.type}</span>
+                    <div class="location-name">${loc.name}</div>
+                    <div class="explanation">${loc.desc}</div>
+                `;
+                resultsGrid.appendChild(card);
+                setTimeout(() => card.classList.add('visible'), 100);
+            });
+
+            loader.style.display = 'none';
+            
+            // Scroll to map
+            window.scrollTo({
+                top: resultsArea.offsetTop - 50,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
