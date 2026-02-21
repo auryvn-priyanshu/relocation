@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIVYA-DATA | AI Relocation Astrology Engine</title>
+    <title>DIVYA-DATA | Vedic Relocation AI</title>
     <!-- Leaflet CSS for Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -17,14 +17,14 @@
             --soft-lilac: #EDE9FE;
             --sky-blue: #E0F2FE;
             --cream-bg: #FCFBFA;
-            --text-dark: #2D3748;
-            --text-light: #718096;
-            --accent-pink: #F472B6;
-            --accent-purple: #A78BFA;
-            --glass: rgba(255, 255, 255, 0.7);
-            --gradient-love: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 100%);
-            --gradient-cta: linear-gradient(135deg, #F472B6 0%, #A78BFA 100%);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --deep-indigo: #4338CA;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --accent-gold: #D97706;
+            --accent-purple: #8B5CF6;
+            --glass: rgba(255, 255, 255, 0.75);
+            --gradient-vedic: linear-gradient(135deg, #FCE7F3 0%, #E0F2FE 100%);
+            --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -38,47 +38,40 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--cream-bg);
             color: var(--text-dark);
-            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* --- BACKGROUND BLOBS --- */
-        .glow-bg {
+        .sanskrit {
+            font-family: 'Noto Serif Devanagari', serif;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        /* --- VEDIC BACKGROUND --- */
+        .cosmic-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            overflow: hidden;
-            background: radial-gradient(circle at 10% 20%, var(--blush-pink) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, var(--sky-blue) 0%, transparent 40%),
-                        radial-gradient(circle at 50% 50%, var(--soft-lilac) 0%, transparent 60%);
+            background: 
+                radial-gradient(circle at 15% 15%, var(--blush-pink) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, var(--sky-blue) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, var(--soft-lilac) 0%, transparent 60%);
+            opacity: 0.8;
         }
 
-        .floating-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: float 20s infinite alternate;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100px, 50px); }
-        }
-
-        /* --- UI COMPONENTS --- */
+        /* --- HEADER & BRANDING --- */
         header {
-            padding: 2rem 1rem;
+            padding: 4rem 1rem 2rem;
             text-align: center;
         }
 
-        .brand {
+        .brand-logo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            letter-spacing: 0.2rem;
+            font-size: 1rem;
+            letter-spacing: 0.4rem;
             color: var(--accent-purple);
             text-transform: uppercase;
             margin-bottom: 0.5rem;
@@ -86,271 +79,292 @@
 
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
-            background: var(--gradient-cta);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 1.5rem 5rem;
-        }
-
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease;
-        }
-
-        /* --- FORM STYLING --- */
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 600px) {
-            .input-group { grid-template-columns: 1fr; }
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .sub-header {
+            font-style: italic;
             color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.05rem;
+            font-size: 1.1rem;
         }
 
-        input, select {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid rgba(167, 139, 250, 0.2);
-            background: rgba(255, 255, 255, 0.8);
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
+        /* --- MAIN CONTAINER --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.1);
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: var(--shadow-premium);
         }
 
-        .btn-main {
+        /* --- FORM --- */
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-inputs { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+        }
+
+        .input-box label {
             display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.75rem;
+        }
+
+        .input-box input, .input-box select {
             width: 100%;
             padding: 1.2rem;
-            border: none;
+            border: 1px solid rgba(0,0,0,0.05);
             border-radius: 16px;
-            background: var(--gradient-cta);
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(244, 114, 182, 0.3);
-            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .btn-main:hover {
+        .input-box input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px rgba(244, 114, 182, 0.4);
         }
 
-        /* --- MAP STYLING --- */
-        #map {
-            height: 450px;
+        .btn-divya {
             width: 100%;
+            padding: 1.5rem;
+            border: none;
             border-radius: 20px;
-            margin-bottom: 2rem;
-            z-index: 1;
-            border: 4px solid white;
+            background: linear-gradient(135deg, #F472B6, #8B5CF6);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .leaflet-container {
-            background: var(--sky-blue) !important;
+        .btn-divya:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 45px rgba(139, 92, 246, 0.4);
         }
 
-        /* --- RESULTS SECTION --- */
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        /* --- MAP --- */
+        #map {
+            height: 550px;
+            border-radius: 32px;
+            margin-top: 4rem;
+            border: 8px solid white;
+            box-shadow: var(--shadow-premium);
+            display: none;
+        }
+
+        /* --- DETAILED CARDS --- */
+        .results-section {
+            margin-top: 5rem;
+            display: none;
         }
 
         .result-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 20px;
-            border-left: 6px solid var(--accent-purple);
-            box-shadow: var(--shadow);
-            opacity: 0;
-            transform: translateY(20px);
+            border-radius: 28px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            border-left: 8px solid var(--accent-purple);
+            box-shadow: var(--shadow-premium);
+            transition: all 0.4s ease;
+            position: relative;
         }
 
-        .result-card.visible {
-            animation: slideUp 0.6s forwards;
+        .result-card:hover {
+            transform: translateX(10px);
         }
 
-        @keyframes slideUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
             font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .tag-career { background: var(--sky-blue); color: #0369a1; }
-        .tag-love { background: var(--blush-pink); color: #be185d; }
-        .tag-peace { background: var(--soft-lilac); color: #6d28d9; }
+        .badge-karma { background: var(--sky-blue); color: #0369a1; }
+        .badge-kama { background: var(--blush-pink); color: #be185d; }
+        .badge-moksha { background: var(--soft-lilac); color: #6d28d9; }
 
-        .location-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .location-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .explanation {
-            font-size: 0.9rem;
+        .insight-text {
+            color: var(--text-dark);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .planetary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1.5rem;
+        }
+
+        .stat-item {
+            font-size: 0.85rem;
+        }
+
+        .stat-label {
             color: var(--text-light);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--accent-purple);
         }
 
         /* --- LOADER --- */
-        .loader-overlay {
+        .vedic-loader {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: var(--cream-bg);
+            z-index: 9999;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
         }
 
-        .loader-circle {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--soft-lilac);
-            border-top: 4px solid var(--accent-purple);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .mantra-animation {
+            font-size: 2.5rem;
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
 
         footer {
+            padding: 5rem 2rem;
             text-align: center;
-            padding: 3rem;
-            font-size: 0.8rem;
-            color: var(--text-light);
-            letter-spacing: 0.1rem;
+            background: white;
+            margin-top: 5rem;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: 0.5rem;
+            color: var(--text-dark);
         }
     </style>
 </head>
 <body>
 
-    <div class="glow-bg">
-        <div class="floating-orb" style="width: 400px; height: 400px; background: var(--blush-pink); top: -100px; right: -100px;"></div>
-        <div class="floating-orb" style="width: 300px; height: 300px; background: var(--sky-blue); bottom: -50px; left: -50px;"></div>
-    </div>
+    <div class="cosmic-overlay"></div>
 
-    <div class="loader-overlay" id="loader">
-        <div class="loader-circle"></div>
-        <p style="margin-top: 1.5rem; font-family: 'Playfair Display'; font-style: italic;">Consulting the stars for your journey...</p>
+    <div class="vedic-loader" id="vedicLoader">
+        <div class="mantra-animation sanskrit">ॐ</div>
+        <p class="sanskrit" style="font-size: 1.2rem;">Divya-Data: Scanning Akasha...</p>
+        <p style="margin-top: 1rem; font-style: italic; color: var(--text-light);">Calculating planetary drishti for your relocation...</p>
     </div>
 
     <header>
-        <div class="brand">Divya-Data</div>
-        <h1>Relocation AI</h1>
-        <p style="color: var(--text-light)">Where should your soul settle next?</p>
+        <div class="brand-logo">Divya-Data</div>
+        <h1 class="sanskrit">ज्योतिष Relocation AI</h1>
+        <p class="sub-header">Advanced Astro-Cartography for the Modern Soul</p>
     </header>
 
     <div class="container">
-        <section class="glass-card">
-            <div class="input-group">
-                <div>
-                    <label>Birth Date</label>
-                    <input type="date" id="birthDate" value="2000-01-01">
+        <section class="glass-panel">
+            <div class="grid-inputs">
+                <div class="input-box">
+                    <label>Birth Date / जन्म तिथि</label>
+                    <input type="date" id="dob" value="1995-06-15">
                 </div>
-                <div>
-                    <label>Birth Time</label>
-                    <input type="time" id="birthTime" value="12:00">
+                <div class="input-box">
+                    <label>Birth Time / जन्म समय</label>
+                    <input type="time" id="tob" value="10:30">
                 </div>
-            </div>
-            <div class="input-group">
-                <div>
-                    <label>Birth City</label>
-                    <input type="text" id="birthCity" placeholder="e.g. New York, London">
+                <div class="input-box">
+                    <label>Current Location / वर्तमान स्थान</label>
+                    <input type="text" id="city" placeholder="e.g. Mumbai, India">
                 </div>
-                <div>
-                    <label>Focus Area</label>
-                    <select id="focus">
-                        <option value="all">Global Analysis</option>
-                        <option value="career">Professional Growth</option>
-                        <option value="love">Romantic Harmony</option>
-                        <option value="peace">Spiritual Peace</option>
+                <div class="input-box">
+                    <label>Soul Path / मुख्य उद्देश्य</label>
+                    <select id="intention">
+                        <option value="karma">Karma (Career & Abundance)</option>
+                        <option value="kama">Kama (Love & Relationships)</option>
+                        <option value="moksha">Moksha (Peace & Spiritual Growth)</option>
+                        <option value="dharma">Full Destiny Mapping</option>
                     </select>
                 </div>
             </div>
-            <button class="btn-main" onclick="calculateRelocation()">Generate Destiny Map</button>
+            <button class="btn-divya" onclick="calculateSoulPath()">
+                Manifest Your Map <span class="sanskrit">॥ दर्शन ॥</span>
+            </button>
         </section>
 
-        <div id="results-area" style="display: none;">
-            <div id="map"></div>
+        <div id="map"></div>
 
-            <h2 style="font-family: 'Playfair Display'; margin-bottom: 1.5rem; text-align: center;">Your Celestial Sanctuary</h2>
-            
-            <div class="results-grid" id="resultsGrid">
-                <!-- Cards injected here -->
-            </div>
-        </div>
+        <section class="results-section" id="resultsSection">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-family: 'Playfair Display'; font-size: 2.5rem;">The Scroll of Destiny</h2>
+            <div id="cardsContainer"></div>
+        </section>
     </div>
 
     <footer>
-        &copy; 2024 DIVYA-DATA ASTRO-INTELLIGENCE. <br>
-        Crafted for the modern soul.
+        <div class="footer-logo">DIVYA-DATA</div>
+        <p style="margin-top: 1rem; color: var(--text-light);">Proprietary Vedic-AI Synthesis. All planetary calculations are based on the Sidereal (Lahiri) Ayanamsa.</p>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let map;
-        let markers = [];
-        let planetaryLines = [];
-
-        // Initialization
-        window.onload = () => {
-            initMap();
-        };
+        let activeLayers = [];
 
         function initMap() {
             map = L.map('map', {
-                zoomControl: false,
-                attributionControl: false
+                zoomControl: true,
+                attributionControl: false,
+                scrollWheelZoom: false
             }).setView([20, 0], 2);
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -358,84 +372,119 @@
             }).addTo(map);
         }
 
-        async function calculateRelocation() {
-            const loader = document.getElementById('loader');
-            const resultsArea = document.getElementById('results-area');
-            const resultsGrid = document.getElementById('resultsGrid');
-            
-            // Show Loader
-            loader.style.display = 'flex';
-            resultsArea.style.display = 'none';
-            resultsGrid.innerHTML = '';
-            
-            // Simulate AI/Astrological Calculation
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        async function calculateSoulPath() {
+            const loader = document.getElementById('vedicLoader');
+            const mapEl = document.getElementById('map');
+            const resSection = document.getElementById('resultsSection');
+            const container = document.getElementById('cardsContainer');
 
-            const locations = [
-                { name: "Tokyo, Japan", type: "career", lat: 35.6762, lng: 139.6503, desc: "Your Midheaven (MC) line aligns here. A power zone for leadership and public recognition." },
-                { name: "Paris, France", type: "love", lat: 48.8566, lng: 2.3522, desc: "Venus is Ascending. Your natural charm and aesthetic appreciation are magnified in this romantic capital." },
-                { name: "Ubud, Bali", type: "peace", lat: -8.5069, lng: 115.2625, desc: "Neptune IC line provides deep spiritual grounding and emotional healing." },
-                { name: "Lisbon, Portugal", type: "career", lat: 38.7223, lng: -9.1393, desc: "Sun MC line creates opportunities for authentic self-expression in your professional life." },
-                { name: "Vancouver, Canada", type: "peace", lat: 49.2827, lng: -123.1207, desc: "Moon IC line offers a sense of 'home' and emotional security that you've been seeking." },
-                { name: "Sydney, Australia", type: "love", lat: -33.8688, lng: 151.2093, desc: "Jupiter Descendant line brings expansion through partnerships and serendipitous encounters." }
+            loader.style.display = 'flex';
+            
+            // Artificial delay for "processing"
+            await new Promise(r => setTimeout(r, 2500));
+
+            if (!map) initMap();
+            mapEl.style.display = 'block';
+            resSection.style.display = 'block';
+            container.innerHTML = '';
+            
+            // Clear markers
+            activeLayers.forEach(l => map.removeLayer(l));
+            activeLayers = [];
+
+            const data = [
+                {
+                    city: "San Francisco, USA",
+                    type: "karma",
+                    lat: 37.7749, lng: -122.4194,
+                    title: "The Surya-Karma Meridian",
+                    sanskrit: "सूर्य कर्म",
+                    insight: "Your Sun (Surya) enters the 10th House cusp in this region. This creates a powerful 'Digbala' effect for leadership. In San Francisco, the planetary frequency shifts towards visibility and authority. You are likely to experience a 'Dhana Yoga'—the alignment of wealth—if you pursue technology or innovation here. Your solar vitality is highest on this longitude.",
+                    planetary: { planet: "Sun (Surya)", power: "94%", influence: "Career & Public Recognition" }
+                },
+                {
+                    city: "Florence, Italy",
+                    type: "kama",
+                    lat: 43.7696, lng: 11.2558,
+                    title: "The Shukra-Kama Axis",
+                    sanskrit: "शुक्र काम",
+                    insight: "Venus (Shukra) is currently transiting your Descendant line here. This is the axis of 'Kama'—desire and partnership. In Florence, your aesthetic sensibilities are naturally harmonized with the environment. It is a 'Vivaha Zone', where relationships find deep emotional resonance and stability. The Venusian energy here softens your Mars-based conflicts, allowing for soulful romance.",
+                    planetary: { planet: "Venus (Shukra)", power: "88%", influence: "Love, Art & Aesthetic Fulfillment" }
+                },
+                {
+                    city: "Rishikesh, India",
+                    type: "moksha",
+                    lat: 30.0869, lng: 78.2676,
+                    title: "The Guru-Moksha Sanctuary",
+                    sanskrit: "गुरु मोक्ष",
+                    insight: "Jupiter (Guru) sits on your Fourth House (IC) line in this sacred geography. This is the pinnacle of Moksha—spiritual liberation and inner peace. Here, the noise of the external world fades. It facilitates 'Atma-Chintan' or self-reflection. If you are seeking to write, meditate, or heal from generational trauma, this planetary line provides the ultimate protective shield.",
+                    planetary: { planet: "Jupiter (Guru)", power: "97%", influence: "Spiritual Wisdom & Inner Calm" }
+                },
+                {
+                    city: "Berlin, Germany",
+                    type: "karma",
+                    lat: 52.5200, lng: 13.4050,
+                    title: "The Shani-Dharma Grid",
+                    sanskrit: "शनि धर्म",
+                    insight: "Saturn (Shani) rules this meridian for you. While Saturn is often feared, here it offers 'Sthirta'—long-term stability and discipline. You will find that projects started here have immense longevity. It is not an easy path, but one that builds an empire. Your 'Dharma'—life purpose—is structured through rigorous effort and intellectual mastery in this zone.",
+                    planetary: { planet: "Saturn (Shani)", power: "82%", influence: "Structure, Discipline & Legacy" }
+                },
+                {
+                    city: "Kyoto, Japan",
+                    type: "moksha",
+                    lat: 35.0116, lng: 135.7681,
+                    title: "The Chandra-Peace Gateway",
+                    sanskrit: "चन्द्र शान्ति",
+                    insight: "The Moon (Chandra) aligns with your Ascendant line across the Kansai region. This is the 'Som-Rasa'—the nectar of emotional fluidity. In Kyoto, your mental health finds a natural rhythm. The constant anxiety of your natal chart is quieted by the lunar energy of this location. It is an ideal zone for raising a family or artistic creation that requires high emotional intelligence.",
+                    planetary: { planet: "Moon (Chandra)", power: "91%", influence: "Emotional Intelligence & Family" }
+                }
             ];
 
-            // Clear previous data
-            markers.forEach(m => map.removeLayer(m));
-            planetaryLines.forEach(l => map.removeLayer(l));
-            markers = [];
-            planetaryLines = [];
-
-            // Display Results
-            resultsArea.style.display = 'block';
-            map.invalidateSize();
-
-            locations.forEach((loc, index) => {
+            data.forEach((item, i) => {
                 // Add Marker
-                const color = loc.type === 'career' ? '#E0F2FE' : loc.type === 'love' ? '#FCE7F3' : '#EDE9FE';
-                const marker = L.circleMarker([loc.lat, loc.lng], {
-                    radius: 12,
+                const color = item.type === 'karma' ? '#0ea5e9' : item.type === 'kama' ? '#ec4899' : '#8b5cf6';
+                const marker = L.circleMarker([item.lat, item.lng], {
+                    radius: 15,
                     fillColor: color,
-                    color: '#fff',
-                    weight: 3,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                }).addTo(map).bindPopup(`<b>${loc.name}</b><br>${loc.desc}`);
-                markers.push(marker);
-
-                // Add "Planetary Line" (Curved Path effect)
-                const line = L.polyline([
-                    [loc.lat - 80, loc.lng - 20],
-                    [loc.lat, loc.lng],
-                    [loc.lat + 80, loc.lng + 20]
-                ], {
-                    color: color === '#E0F2FE' ? '#0ea5e9' : color === '#FCE7F3' ? '#f472b6' : '#a78bfa',
-                    weight: 2,
-                    dashArray: '5, 10',
-                    opacity: 0.5
-                }).addTo(map);
-                planetaryLines.push(line);
+                    color: 'white',
+                    weight: 4,
+                    fillOpacity: 0.9
+                }).addTo(map).bindPopup(`<b>${item.title}</b><br>${item.city}`);
+                activeLayers.push(marker);
 
                 // Add Card
                 const card = document.createElement('div');
                 card.className = 'result-card';
-                card.style.animationDelay = `${index * 0.1}s`;
                 card.innerHTML = `
-                    <span class="tag tag-${loc.type}">${loc.type}</span>
-                    <div class="location-name">${loc.name}</div>
-                    <div class="explanation">${loc.desc}</div>
+                    <div class="category-badge badge-${item.type}">
+                        <span class="sanskrit">॥ ${item.type.toUpperCase()} ॥</span>
+                    </div>
+                    <h3 class="location-title">
+                        ${item.city} <span class="sanskrit" style="font-size: 1.2rem; color: var(--text-light)">(${item.sanskrit})</span>
+                    </h3>
+                    <p style="font-weight: 700; color: var(--accent-purple); margin-bottom: 0.5rem;">${item.title}</p>
+                    <p class="insight-text">${item.insight}</p>
+                    <div class="planetary-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Ruling Graha</span>
+                            <span class="stat-value">${item.planetary.planet}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Alignment Strength</span>
+                            <span class="stat-value">${item.planetary.power}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Primary Influence</span>
+                            <span class="stat-value">${item.planetary.influence}</span>
+                        </div>
+                    </div>
                 `;
-                resultsGrid.appendChild(card);
-                setTimeout(() => card.classList.add('visible'), 100);
+                container.appendChild(card);
             });
 
+            map.invalidateSize();
             loader.style.display = 'none';
-            
-            // Scroll to map
-            window.scrollTo({
-                top: resultsArea.offsetTop - 50,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: mapEl.offsetTop - 50, behavior: 'smooth' });
         }
     </script>
 </body>
